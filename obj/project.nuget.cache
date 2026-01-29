@@ -1,20 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "qE/ENGCPIoE=",
+  "dgSpecHash": "v/DMFOSWn5k=",
   "success": true,
   "projectFilePath": "/Users/elemary/Desktop/dot net studies/web api/AiModelDemo/AiModelDemo/AiModelDemo.csproj",
   "expectedPackageFiles": [
     "/Users/elemary/.nuget/packages/messagepack/2.5.187/messagepack.2.5.187.nupkg.sha512",
     "/Users/elemary/.nuget/packages/messagepack.annotations/2.5.187/messagepack.annotations.2.5.187.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/microsoft.aspnetcore.openapi/10.0.0/microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/microsoft.aspnetcore.signalr.protocols.messagepack/10.0.2/microsoft.aspnetcore.signalr.protocols.messagepack.10.0.2.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/microsoft.extensions.apidescription.server/10.0.0/microsoft.extensions.apidescription.server.10.0.0.nupkg.sha512",
+    "/Users/elemary/.nuget/packages/microsoft.aspnetcore.signalr.protocols.messagepack/10.0.0/microsoft.aspnetcore.signalr.protocols.messagepack.10.0.0.nupkg.sha512",
     "/Users/elemary/.nuget/packages/microsoft.net.stringtools/17.6.3/microsoft.net.stringtools.17.6.3.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/microsoft.openapi/2.3.0/microsoft.openapi.2.3.0.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/swashbuckle.aspnetcore/10.1.0/swashbuckle.aspnetcore.10.1.0.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/swashbuckle.aspnetcore.swagger/10.1.0/swashbuckle.aspnetcore.swagger.10.1.0.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/swashbuckle.aspnetcore.swaggergen/10.1.0/swashbuckle.aspnetcore.swaggergen.10.1.0.nupkg.sha512",
-    "/Users/elemary/.nuget/packages/swashbuckle.aspnetcore.swaggerui/10.1.0/swashbuckle.aspnetcore.swaggerui.10.1.0.nupkg.sha512",
     "/Users/elemary/.nuget/packages/vosk/0.3.38/vosk.0.3.38.nupkg.sha512"
   ],
   "logs": []

@@ -1,6 +1,15 @@
-@AiModelDemo_HostAddress = http://localhost:5275
-
-GET {{AiModelDemo_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
+# AiModelDemo - Real-time Speech Recognition API
+# This API uses SignalR WebSocket connections for real-time audio streaming
+# 
+# SignalR Hub URL: http://localhost:5000/hubs/speech
+#
+# Hub Methods:
+# - InitializeRecognition(language: string) - Initialize speech recognition for a language (e.g., "en-us")
+# - ProcessAudio(audioData: byte[]) - Send audio data chunks for transcription
+# - EndUtterance() - End current utterance and get final result
+#
+# Hub Events (Client receives):
+# - RecognitionInitialized - Confirmation that recognition is ready
+# - PartialTranscription - Real-time partial transcription results
+# - FinalTranscription - Final transcription when speech segment is complete
+# - Error - Error messages

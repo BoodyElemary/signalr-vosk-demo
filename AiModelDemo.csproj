@@ -7,14 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="10.0.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="10.0.0" />
         <PackageReference Include="Vosk" Version="0.3.38" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="Models\Vosk\**\*" CopyToOutputDirectory="PreserveNewest" />
+      <None Include="Models\Vosk\en-us\**\*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

@@ -1,18 +1,17 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
 using Vosk;
-using AiModelDemo.Services;
+using AiModelDemo.Core.Interfaces;
 
 namespace AiModelDemo.Hubs;
 
 public class SpeechRecognitionHub : Hub
 {
-    private const int BufferSize = 4096;
     private readonly ISpeechRecognitionService _speechService;
     private readonly ILogger<SpeechRecognitionHub> _logger;
     
     // Store recognizers per connection
-    private static readonly Dictionary<string, VoskRecognizer> _recognizers = new();
+    private static readonly Dictionary<string, VoskRecognizer> Recognizers = new();
 
     public SpeechRecognitionHub(
         ISpeechRecognitionService speechService,
@@ -30,7 +29,7 @@ public class SpeechRecognitionHub : Hub
         try
         {
             var recognizer = _speechService.CreateRecognizer(language);
-            _recognizers[Context.ConnectionId] = recognizer;
+            Recognizers[Context.ConnectionId] = recognizer;
             
             _logger.LogInformation("Recognition initialized for connection {ConnectionId} with language {Language}", 
                 Context.ConnectionId, language);
@@ -49,15 +48,13 @@ public class SpeechRecognitionHub : Hub
     /// </summary>
     public async Task ProcessAudio(byte[] audioData)
     {
-        _logger.LogInformation("ProcessAudio received {ByteCount} bytes", audioData?.Length ?? 0);
-        
-        if (audioData == null || audioData.Length == 0)
+        if (audioData.Length == 0)
         {
             _logger.LogWarning("Received empty audio data");
             return;
         }
 
-        if (!_recognizers.TryGetValue(Context.ConnectionId, out var recognizer))
+        if (!Recognizers.TryGetValue(Context.ConnectionId, out var recognizer))
         {
             await Clients.Caller.SendAsync("Error", new { message = "Recognition not initialized. Call InitializeRecognition first." });
             return;
@@ -69,12 +66,11 @@ public class SpeechRecognitionHub : Hub
             {
                 // Final result
                 var jsonResult = recognizer.Result();
-                _logger.LogInformation("Final result: {Result}", jsonResult);
                 var result = JsonSerializer.Deserialize<VoskResult>(jsonResult);
                 
                 if (!string.IsNullOrWhiteSpace(result?.Text))
                 {
-                    _logger.LogInformation("Sending FinalTranscription to client: {Text}", result.Text);
+                    _logger.LogDebug("Final transcription: {Text}", result.Text);
                     await Clients.Caller.SendAsync("FinalTranscription", new
                     {
                         text = result.Text,
@@ -86,23 +82,15 @@ public class SpeechRecognitionHub : Hub
             {
                 // Partial result
                 var partialResult = recognizer.PartialResult();
-                _logger.LogInformation("Partial result raw: {Result}", partialResult);
                 var result = JsonSerializer.Deserialize<VoskPartialResult>(partialResult);
-                _logger.LogInformation("Partial result deserialized: Partial='{Partial}'", result?.Partial ?? "NULL");
                 
                 if (!string.IsNullOrWhiteSpace(result?.Partial))
                 {
-                    _logger.LogInformation("Sending PartialTranscription to client: {Text}", result.Partial);
                     await Clients.Caller.SendAsync("PartialTranscription", new
                     {
                         text = result.Partial,
                         timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
                     });
-                    _logger.LogInformation("PartialTranscription sent successfully");
-                }
-                else
-                {
-                    _logger.LogInformation("Partial result is empty, not sending to client");
                 }
             }
         }
@@ -118,7 +106,7 @@ public class SpeechRecognitionHub : Hub
     /// </summary>
     public async Task EndUtterance()
     {
-        if (!_recognizers.TryGetValue(Context.ConnectionId, out var recognizer))
+        if (!Recognizers.TryGetValue(Context.ConnectionId, out var recognizer))
         {
             return;
         }
@@ -150,10 +138,10 @@ public class SpeechRecognitionHub : Hub
     /// </summary>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        if (_recognizers.TryGetValue(Context.ConnectionId, out var recognizer))
+        if (Recognizers.TryGetValue(Context.ConnectionId, out var recognizer))
         {
             recognizer.Dispose();
-            _recognizers.Remove(Context.ConnectionId);
+            Recognizers.Remove(Context.ConnectionId);
             _logger.LogInformation("Recognizer disposed for connection {ConnectionId}", Context.ConnectionId);
         }
 

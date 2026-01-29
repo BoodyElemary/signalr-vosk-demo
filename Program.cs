@@ -1,12 +1,8 @@
-using AiModelDemo.Services;
+using AiModelDemo.Core.Interfaces;
+using AiModelDemo.Infrastructure.Speech;
 using AiModelDemo.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 // Add SignalR with MessagePack protocol for efficient binary data transfer
 builder.Services.AddSignalR(options =>
@@ -32,21 +28,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-// Enable WebSockets (required for WebSocket endpoint in SpeechController)
-app.UseWebSockets();
-
 app.UseCors("AllowReactApp");
 
-app.UseAuthorization();
-
-app.MapControllers();
 
 // Map SignalR hub
 app.MapHub<SpeechRecognitionHub>("/hubs/speech");
