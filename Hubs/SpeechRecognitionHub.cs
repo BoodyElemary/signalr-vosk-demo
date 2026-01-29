@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
 using Vosk;
 using AiModelDemo.Core.Interfaces;
+using AiModelDemo.Core.Models;
 
 namespace AiModelDemo.Hubs;
 
@@ -148,16 +149,4 @@ public class SpeechRecognitionHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    // Helper classes for JSON deserialization
-    private class VoskResult
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("text")]
-        public string Text { get; set; } = string.Empty;
-    }
-
-    private class VoskPartialResult
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("partial")]
-        public string Partial { get; set; } = string.Empty;
-    }
 }
