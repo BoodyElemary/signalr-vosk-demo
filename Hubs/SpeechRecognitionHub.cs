@@ -9,16 +9,19 @@ namespace AiModelDemo.Hubs;
 public class SpeechRecognitionHub : Hub
 {
     private readonly ISpeechRecognitionService _speechService;
+    private readonly ILLMService _llmService;
     private readonly ILogger<SpeechRecognitionHub> _logger;
-    
+
     // Store recognizers per connection
     private static readonly Dictionary<string, VoskRecognizer> Recognizers = new();
 
     public SpeechRecognitionHub(
         ISpeechRecognitionService speechService,
+        ILLMService llmService,
         ILogger<SpeechRecognitionHub> logger)
     {
         _speechService = speechService;
+        _llmService = llmService;
         _logger = logger;
     }
 
@@ -131,6 +134,40 @@ public class SpeechRecognitionHub : Hub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error ending utterance");
+        }
+    }
+
+    /// <summary>
+    /// Generate a structured SOAP note from transcription text
+    /// </summary>
+    public async Task GenerateSOAPNote(string transcription, string? patientContext = null, string? consultationType = null)
+    {
+        if (string.IsNullOrWhiteSpace(transcription))
+        {
+            await Clients.Caller.SendAsync("Error", new { message = "Transcription is required" });
+            return;
+        }
+
+        try
+        {
+            // Check if Ollama is available
+            var isAvailable = await _llmService.IsAvailableAsync();
+            if (!isAvailable)
+            {
+                await Clients.Caller.SendAsync("Error", new { message = "Ollama service is not available" });
+                return;
+            }
+
+            _logger.LogInformation("Generating SOAP note from transcription for connection {ConnectionId}", Context.ConnectionId);
+
+            var soapNote = await _llmService.GenerateSOAPNoteAsync(transcription, patientContext, consultationType);
+
+            await Clients.Caller.SendAsync("SOAPNoteGenerated", soapNote);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating SOAP note");
+            await Clients.Caller.SendAsync("Error", new { message = $"Failed to generate SOAP note: {ex.Message}" });
         }
     }
 
