@@ -25,8 +25,15 @@ builder.Services.AddSignalR(options =>
 builder.Services.AddSingleton<ISpeechRecognitionService, VoskSpeechRecognitionService>();
 
 // Register IChatClient for Microsoft.Extensions.AI
+var httpClient = new HttpClient
+{
+    BaseAddress = new Uri(builder.Configuration["Ollama:BaseUrl"] ?? "http://localhost:11434"),
+    Timeout = TimeSpan.FromMinutes(10)
+};
+
 builder.Services.AddChatClient(
-    new OllamaApiClient(new Uri(builder.Configuration["Ollama:BaseUrl"] ?? "http://localhost:11434"), builder.Configuration["Ollama:Model"] ?? "meditron:7b"));
+    new OllamaApiClient(httpClient, builder.Configuration["Ollama:Model"] ?? "llama3.2:3b"));
+
 
 builder.Services.AddSingleton<ILLMService, OllamaService>();
 
